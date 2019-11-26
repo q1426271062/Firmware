@@ -114,7 +114,7 @@ public:
 	int print_status() override;
 
 private:
-	int getRangeSubIndex(); ///< get subscription index of first downward-facing range sensor
+	int getRangeSubIndex(); ///< 获取第一个向下的距离传感器的订阅指数get subscription index of first downward-facing range sensor
 
 	PreFlightChecker _preflt_checker;
 	void runPreFlightChecks(float dt, const filter_control_status_u &control_status,
