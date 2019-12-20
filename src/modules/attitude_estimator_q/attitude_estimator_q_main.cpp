@@ -72,7 +72,7 @@ class AttitudeEstimatorQ;
 namespace attitude_estimator_q
 {
 AttitudeEstimatorQ *instance;
-} // namespace attitude_estimator_q
+} // namespace attitude_estimator_q  cs==lar
 
 
 class AttitudeEstimatorQ
