@@ -346,9 +346,16 @@ void PositionControl::updateConstraints(const vehicle_constraints_s &constraints
 	// For safety check if adjustable constraints are below global constraints. If they are not stricter than global
 	// constraints, then just use global constraints for the limits.
 
+	const float tilt_max_radians = math::radians(math::max(_param_mpc_tiltmax_air.get(), _param_mpc_man_tilt_max.get()));
+
 	if (!PX4_ISFINITE(constraints.tilt)
+<<<<<<< HEAD:src/modules/mc_pos_control/PositionControl/PositionControl.cpp
 	    || !(constraints.tilt < _lim_tilt)) {
 		_constraints.tilt = _lim_tilt;
+=======
+	    || !(constraints.tilt < tilt_max_radians)) {
+		_constraints.tilt = tilt_max_radians;
+>>>>>>> v1.9.2:src/modules/mc_pos_control/PositionControl.cpp
 	}
 
 	if (!PX4_ISFINITE(constraints.speed_up) || !(constraints.speed_up < _lim_vel_up)) {
@@ -366,6 +373,7 @@ void PositionControl::updateConstraints(const vehicle_constraints_s &constraints
 
 void PositionControl::getLocalPositionSetpoint(vehicle_local_position_setpoint_s &local_position_setpoint) const
 {
+<<<<<<< HEAD:src/modules/mc_pos_control/PositionControl/PositionControl.cpp
 	local_position_setpoint.x = _pos_sp(0);
 	local_position_setpoint.y = _pos_sp(1);
 	local_position_setpoint.z = _pos_sp(2);
@@ -382,4 +390,7 @@ void PositionControl::getAttitudeSetpoint(vehicle_attitude_setpoint_s &attitude_
 {
 	ControlMath::thrustToAttitude(_thr_sp, _yaw_sp, attitude_setpoint);
 	attitude_setpoint.yaw_sp_move_rate = _yawspeed_sp;
+=======
+	ModuleParams::updateParams();
+>>>>>>> v1.9.2:src/modules/mc_pos_control/PositionControl.cpp
 }

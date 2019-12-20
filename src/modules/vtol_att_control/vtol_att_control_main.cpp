@@ -48,7 +48,13 @@
  */
 #include "vtol_att_control_main.h"
 #include <systemlib/mavlink_log.h>
+<<<<<<< HEAD
 #include <uORB/PublicationQueued.hpp>
+=======
+#include <matrix/matrix/math.hpp>
+
+using namespace matrix;
+>>>>>>> v1.9.2
 
 using namespace matrix;
 
@@ -420,9 +426,48 @@ VtolAttitudeControl::Run()
 			break;
 		}
 
+<<<<<<< HEAD
 		_vtol_type->fill_actuator_outputs();
 		_actuators_0_pub.publish(_actuators_out_0);
 		_actuators_1_pub.publish(_actuators_out_1);
+=======
+		// reinitialize the setpoint while not armed to make sure no value from the last mode or flight is still kept
+		if (!_v_control_mode.flag_armed) {
+			Quatf().copyTo(_mc_virtual_att_sp.q_d);
+			Vector3f().copyTo(_mc_virtual_att_sp.thrust_body);
+			Quatf().copyTo(_v_att_sp.q_d);
+			Vector3f().copyTo(_v_att_sp.thrust_body);
+		}
+
+		/* Only publish if the proper mode(s) are enabled */
+		if (_v_control_mode.flag_control_attitude_enabled ||
+		    _v_control_mode.flag_control_rates_enabled ||
+		    _v_control_mode.flag_control_manual_enabled) {
+
+			if (_v_att_sp_pub != nullptr) {
+				/* publish the attitude setpoint */
+				orb_publish(ORB_ID(vehicle_attitude_setpoint), _v_att_sp_pub, &_v_att_sp);
+
+			} else {
+				/* advertise and publish */
+				_v_att_sp_pub = orb_advertise(ORB_ID(vehicle_attitude_setpoint), &_v_att_sp);
+			}
+
+			if (_actuators_0_pub != nullptr) {
+				orb_publish(ORB_ID(actuator_controls_0), _actuators_0_pub, &_actuators_out_0);
+
+			} else {
+				_actuators_0_pub = orb_advertise(ORB_ID(actuator_controls_0), &_actuators_out_0);
+			}
+
+			if (_actuators_1_pub != nullptr) {
+				orb_publish(ORB_ID(actuator_controls_1), _actuators_1_pub, &_actuators_out_1);
+
+			} else {
+				_actuators_1_pub = orb_advertise(ORB_ID(actuator_controls_1), &_actuators_out_1);
+			}
+		}
+>>>>>>> v1.9.2
 
 		// Advertise/Publish vtol vehicle status
 		_vtol_vehicle_status.timestamp = hrt_absolute_time();

@@ -23,6 +23,7 @@ ist8310 -C -b 2 start
 hmc5883 -C -T -X start
 qmc5883 -X start
 lis3mdl -X start
+<<<<<<< HEAD
 
 # ICM20948 as external magnetometer on I2C (e.g. Here GPS)
 if ! icm20948 -X -M -R 6 start
@@ -30,6 +31,8 @@ then
 	# external emulated AK09916 (Here2) is rotated 270 degrees yaw
 	ak09916 -X -R 6 start
 fi
+=======
+>>>>>>> v1.9.2
 
 # Possible internal compass
 ist8310 -C -b 5 start

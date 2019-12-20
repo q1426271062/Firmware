@@ -245,4 +245,29 @@ private:
 	bool _skip_controller{false}; /**< skips position/velocity controller. true for stabilized mode */
 	bool _ctrl_pos[3] = {true, true, true}; /**< True if the control-loop for position was used */
 	bool _ctrl_vel[3] = {true, true, true}; /**< True if the control-loop for velocity was used */
+<<<<<<< HEAD:src/modules/mc_pos_control/PositionControl/PositionControl.hpp
+=======
+
+	DEFINE_PARAMETERS(
+		(ParamFloat<px4::params::MPC_THR_MAX>) _param_mpc_thr_max,
+		(ParamFloat<px4::params::MPC_THR_HOVER>) _param_mpc_thr_hover,
+		(ParamFloat<px4::params::MPC_THR_MIN>) _param_mpc_thr_min,
+		(ParamFloat<px4::params::MPC_MANTHR_MIN>) _param_mpc_manthr_min,
+		(ParamFloat<px4::params::MPC_XY_VEL_MAX>) _param_mpc_xy_vel_max,
+		(ParamFloat<px4::params::MPC_Z_VEL_MAX_DN>) _param_mpc_z_vel_max_dn,
+		(ParamFloat<px4::params::MPC_Z_VEL_MAX_UP>) _param_mpc_z_vel_max_up,
+		(ParamFloat<px4::params::MPC_TILTMAX_AIR>)
+		_param_mpc_tiltmax_air, // maximum tilt for any position controlled mode in degrees
+		(ParamFloat<px4::params::MPC_MAN_TILT_MAX>)
+		_param_mpc_man_tilt_max, // maximum til for stabilized/altitude mode in degrees
+		(ParamFloat<px4::params::MPC_Z_P>) _param_mpc_z_p,
+		(ParamFloat<px4::params::MPC_Z_VEL_P>) _param_mpc_z_vel_p,
+		(ParamFloat<px4::params::MPC_Z_VEL_I>) _param_mpc_z_vel_i,
+		(ParamFloat<px4::params::MPC_Z_VEL_D>) _param_mpc_z_vel_d,
+		(ParamFloat<px4::params::MPC_XY_P>) _param_mpc_xy_p,
+		(ParamFloat<px4::params::MPC_XY_VEL_P>) _param_mpc_xy_vel_p,
+		(ParamFloat<px4::params::MPC_XY_VEL_I>) _param_mpc_xy_vel_i,
+		(ParamFloat<px4::params::MPC_XY_VEL_D>) _param_mpc_xy_vel_d
+	)
+>>>>>>> v1.9.2:src/modules/mc_pos_control/PositionControl.hpp
 };
