@@ -2896,12 +2896,6 @@ public:
 
 		case 1:
 			return "SERVO_OUTPUT_RAW_1";
-
-		case 2:
-			return "SERVO_OUTPUT_RAW_2";
-
-		case 3:
-			return "SERVO_OUTPUT_RAW_3";
 		}
 	}
 
@@ -4727,7 +4721,8 @@ public:
 
 private:
 	MavlinkOrbSubscription *_mount_orientation_sub;
-	uint64_t _mount_orientation_time;
+	MavlinkOrbSubscription *_gpos_sub;
+	uint64_t _mount_orientation_time{0};
 
 	/* do not allow top copying this class */
 	MavlinkStreamMountOrientation(MavlinkStreamMountOrientation &) = delete;
@@ -4736,12 +4731,12 @@ private:
 protected:
 	explicit MavlinkStreamMountOrientation(Mavlink *mavlink) : MavlinkStream(mavlink),
 		_mount_orientation_sub(_mavlink->add_orb_subscription(ORB_ID(mount_orientation))),
-		_mount_orientation_time(0)
+		_gpos_sub(_mavlink->add_orb_subscription(ORB_ID(vehicle_global_position)))
 	{}
 
 	bool send(const hrt_abstime t) override
 	{
-		struct mount_orientation_s mount_orientation;
+		mount_orientation_s mount_orientation{};
 
 		if (_mount_orientation_sub->update(&_mount_orientation_time, &mount_orientation)) {
 			mavlink_mount_orientation_t msg = {};
@@ -4749,6 +4744,10 @@ protected:
 			msg.roll = math::degrees(mount_orientation.attitude_euler_angle[0]);
 			msg.pitch = math::degrees(mount_orientation.attitude_euler_angle[1]);
 			msg.yaw = math::degrees(mount_orientation.attitude_euler_angle[2]);
+
+			vehicle_global_position_s gpos{};
+			_gpos_sub->update(&gpos);
+			msg.yaw_absolute = math::degrees(matrix::wrap_2pi(gpos.yaw + mount_orientation.attitude_euler_angle[2]));
 
 			mavlink_msg_mount_orientation_send_struct(_mavlink->get_channel(), &msg);
 
@@ -5098,8 +5097,6 @@ static const StreamListItem streams_list[] = {
 	StreamListItem(&MavlinkStreamHomePosition::new_instance, &MavlinkStreamHomePosition::get_name_static, &MavlinkStreamHomePosition::get_id_static),
 	StreamListItem(&MavlinkStreamServoOutputRaw<0>::new_instance, &MavlinkStreamServoOutputRaw<0>::get_name_static, &MavlinkStreamServoOutputRaw<0>::get_id_static),
 	StreamListItem(&MavlinkStreamServoOutputRaw<1>::new_instance, &MavlinkStreamServoOutputRaw<1>::get_name_static, &MavlinkStreamServoOutputRaw<1>::get_id_static),
-	StreamListItem(&MavlinkStreamServoOutputRaw<2>::new_instance, &MavlinkStreamServoOutputRaw<2>::get_name_static, &MavlinkStreamServoOutputRaw<2>::get_id_static),
-	StreamListItem(&MavlinkStreamServoOutputRaw<3>::new_instance, &MavlinkStreamServoOutputRaw<3>::get_name_static, &MavlinkStreamServoOutputRaw<3>::get_id_static),
 	StreamListItem(&MavlinkStreamHILActuatorControls::new_instance, &MavlinkStreamHILActuatorControls::get_name_static, &MavlinkStreamHILActuatorControls::get_id_static),
 	StreamListItem(&MavlinkStreamPositionTargetGlobalInt::new_instance, &MavlinkStreamPositionTargetGlobalInt::get_name_static, &MavlinkStreamPositionTargetGlobalInt::get_id_static),
 	StreamListItem(&MavlinkStreamLocalPositionSetpoint::new_instance, &MavlinkStreamLocalPositionSetpoint::get_name_static, &MavlinkStreamLocalPositionSetpoint::get_id_static),
@@ -5109,9 +5106,9 @@ static const StreamListItem streams_list[] = {
 	StreamListItem(&MavlinkStreamTrajectoryRepresentationWaypoints::new_instance, &MavlinkStreamTrajectoryRepresentationWaypoints::get_name_static, &MavlinkStreamTrajectoryRepresentationWaypoints::get_id_static),
 	StreamListItem(&MavlinkStreamOpticalFlowRad::new_instance, &MavlinkStreamOpticalFlowRad::get_name_static, &MavlinkStreamOpticalFlowRad::get_id_static),
 	StreamListItem(&MavlinkStreamActuatorControlTarget<0>::new_instance, &MavlinkStreamActuatorControlTarget<0>::get_name_static, &MavlinkStreamActuatorControlTarget<0>::get_id_static),
-	StreamListItem(&MavlinkStreamActuatorControlTarget<1>::new_instance, &MavlinkStreamActuatorControlTarget<1>::get_name_static, &MavlinkStreamActuatorControlTarget<1>::get_id_static),
-	StreamListItem(&MavlinkStreamActuatorControlTarget<2>::new_instance, &MavlinkStreamActuatorControlTarget<2>::get_name_static, &MavlinkStreamActuatorControlTarget<2>::get_id_static),
-	StreamListItem(&MavlinkStreamActuatorControlTarget<3>::new_instance, &MavlinkStreamActuatorControlTarget<3>::get_name_static, &MavlinkStreamActuatorControlTarget<3>::get_id_static),
+	//StreamListItem(&MavlinkStreamActuatorControlTarget<1>::new_instance, &MavlinkStreamActuatorControlTarget<1>::get_name_static, &MavlinkStreamActuatorControlTarget<1>::get_id_static),
+	//StreamListItem(&MavlinkStreamActuatorControlTarget<2>::new_instance, &MavlinkStreamActuatorControlTarget<2>::get_name_static, &MavlinkStreamActuatorControlTarget<2>::get_id_static),
+	//StreamListItem(&MavlinkStreamActuatorControlTarget<3>::new_instance, &MavlinkStreamActuatorControlTarget<3>::get_name_static, &MavlinkStreamActuatorControlTarget<3>::get_id_static),
 	StreamListItem(&MavlinkStreamNamedValueFloat::new_instance, &MavlinkStreamNamedValueFloat::get_name_static, &MavlinkStreamNamedValueFloat::get_id_static),
 	StreamListItem(&MavlinkStreamDebug::new_instance, &MavlinkStreamDebug::get_name_static, &MavlinkStreamDebug::get_id_static),
 	StreamListItem(&MavlinkStreamDebugVect::new_instance, &MavlinkStreamDebugVect::get_name_static, &MavlinkStreamDebugVect::get_id_static),

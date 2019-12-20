@@ -78,18 +78,18 @@ int px4_simple_app_main(int argc, char *argv[])
 	int error_counter = 0;
 
 	for (int i = 0; i < 5; i++) {
-		/* wait for sensor update of 1 file descriptor for 1000 ms (1 second) */
+		/* wait for sensor update of 1 file descriptor for 1000 ms (1 second)；；fds指向结构体第0个元素；；1是结构体数组长度；；1000是超时时间 */
 		int poll_ret = px4_poll(fds, 1, 1000);
 
 		/* handle the poll result */
 		if (poll_ret == 0) {
-			/* this means none of our providers is giving us data */
+			/* this means none of our providers is giving us data；；=0等待超时；；<0是出错；；>0是监听文件描述符（fd）等待就绪 */
 			PX4_ERR("Got no data within a second");
 
 		} else if (poll_ret < 0) {
 			/* this is seriously bad - should be an emergency */
 			if (error_counter < 10 || error_counter % 50 == 0) {
-				/* use a counter to prevent flooding (and slowing us down) */
+				/* use a counter to prevent flooding (and slowing us down) ；；||是或；；&是and；；&&是且*/
 				PX4_ERR("ERROR return value from poll(): %d", poll_ret);
 			}
 
@@ -98,9 +98,9 @@ int px4_simple_app_main(int argc, char *argv[])
 		} else {
 
 			if (fds[0].revents & POLLIN) {
-				/* obtained data for the first file descriptor */
+				/* obtained data for the first file descriptor ；；event=要求监听项；；revent=返回监听项*/
 				struct sensor_combined_s raw;
-				/* copy sensors raw data into local buffer */
+				/* copy sensors raw data into local buffer；；/t是TAB，8个字符；；%8要求8个字符位 */
 				orb_copy(ORB_ID(sensor_combined), sensor_sub_fd, &raw);
 				PX4_INFO("Accelerometer:\t%8.4f\t%8.4f\t%8.4f",
 					 (double)raw.accelerometer_m_s2[0],
@@ -118,7 +118,7 @@ int px4_simple_app_main(int argc, char *argv[])
 			}
 
 			/* there could be more file descriptors here, in the form like:
-			 * if (fds[1..n].revents & POLLIN) {}
+			 * if (fds[1..n].revents & POLLIN) {}；；pollin是可读；；orb_xxx是订阅消息ourB的规则
 			 */
 		}
 	}
