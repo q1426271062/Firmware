@@ -201,7 +201,7 @@ AttitudeEstimatorQ::Run()
 
 		update_parameters();
 
-		// Feed validator with recent sensor data
+		// Feed validator with recent sensor data；；拷贝出sensor数据进行更新（上面update&sensor）
 		if (sensors.timestamp > 0) {
 			_gyro(0) = sensors.gyro_rad[0];
 			_gyro(1) = sensors.gyro_rad[1];
@@ -245,7 +245,7 @@ AttitudeEstimatorQ::Run()
 			vehicle_odometry_s vision;
 
 			if (_vision_odom_sub.copy(&vision)) {
-				// validation check for vision attitude data
+				// validation check for vision attitude data 视觉有更新拷贝视觉数据
 				bool vision_att_valid = PX4_ISFINITE(vision.q[0])
 							&& (PX4_ISFINITE(vision.pose_covariance[vision.COVARIANCE_MATRIX_ROLL_VARIANCE]) ? sqrtf(fmaxf(
 									vision.pose_covariance[vision.COVARIANCE_MATRIX_ROLL_VARIANCE],
@@ -274,7 +274,7 @@ AttitudeEstimatorQ::Run()
 			vehicle_odometry_s mocap;
 
 			if (_mocap_odom_sub.copy(&mocap)) {
-				// validation check for mocap attitude data
+				// validation check for mocap attitude data ；mocap数据有更新，拷贝
 				bool mocap_att_valid = PX4_ISFINITE(mocap.q[0])
 						       && (PX4_ISFINITE(mocap.pose_covariance[mocap.COVARIANCE_MATRIX_ROLL_VARIANCE]) ? sqrtf(fmaxf(
 								       mocap.pose_covariance[mocap.COVARIANCE_MATRIX_ROLL_VARIANCE],
@@ -300,7 +300,7 @@ AttitudeEstimatorQ::Run()
 		}
 
 		if (_global_pos_sub.updated()) {
-			vehicle_global_position_s gpos;
+			vehicle_global_position_s gpos;//gps数据更新拷贝
 
 			if (_global_pos_sub.copy(&gpos)) {
 				if (_param_att_mag_decl_a.get() && gpos.eph < 20.0f && hrt_elapsed_time(&gpos.timestamp) < 1_s) {
